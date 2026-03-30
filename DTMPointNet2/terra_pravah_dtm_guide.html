@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terra Pravah · AI-Driven DTM — The Clean Earth Problem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0b0e0f;
+  --bg2:      #111517;
+  --bg3:      #161c1e;
+  --amber:    #e8a84c;
+  --amber2:   #f5c97a;
+  --teal:     #3dd6b5;
+  --teal2:    #5fecd1;
+  --river:    #4a90d9;
+  --river2:   #6fb3f5;
+  --rust:     #c4563a;
+  --sand:     #d4b896;
+  --muted:    #6b7880;
+  --text:     #d8dee2;
+  --text2:    #a8b4bc;
+  --border:   rgba(255,255,255,0.07);
+  --glow-a:   rgba(232,168,76,0.15);
+  --glow-t:   rgba(61,214,181,0.12);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html { scroll-behavior: smooth }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Topo background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(232,168,76,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 20% 80%, rgba(61,214,181,0.03) 0%, transparent 60%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.018) 39px,
+      rgba(255,255,255,0.018) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.012) 39px,
+      rgba(255,255,255,0.012) 40px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Topo contour SVG overlay ── */
+#topo-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+}
+
+main { position: relative; z-index: 1; }
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 10vw 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,168,76,0.1);
+  border: 1px solid rgba(232,168,76,0.25);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 40px;
+  animation: fadeSlideUp 1s ease both;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.4;transform:scale(0.7)}
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 7vw, 7rem);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  animation: fadeSlideUp 1s 0.1s ease both;
+}
+
+.hero-title .line1 { color: var(--text); }
+.hero-title .line2 {
+  color: var(--amber);
+  font-style: italic;
+}
+.hero-title .line3 { color: var(--muted); font-size: 0.55em; font-weight: 400; margin-top: 8px; letter-spacing: 0.02em; }
+
+.hero-sub {
+  max-width: 620px;
+  font-size: 1.1rem;
+  color: var(--text2);
+  margin-top: 32px;
+  line-height: 1.8;
+  animation: fadeSlideUp 1s 0.2s ease both;
+}
+
+.hero-sub em { color: var(--amber); font-style: normal; font-weight: 500; }
+
+.hero-metrics {
+  display: flex;
+  gap: 48px;
+  margin-top: 56px;
+  animation: fadeSlideUp 1s 0.3s ease both;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.metric-val span { font-size: 1.4rem; color: var(--amber2); }
+
+.metric-lbl {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  animation: fadeSlideUp 2s 1s ease both;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--amber), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+@keyframes scrollPulse {
+  0%,100%{opacity:0.3;transform:scaleY(0.7) translateY(-5px)}
+  50%{opacity:1;transform:scaleY(1) translateY(0)}
+}
+
+/* ── Sections ── */
+section {
+  padding: 100px 10vw;
+  position: relative;
+}
+
+section + section {
+  border-top: 1px solid var(--border);
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--teal);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
+
+.section-title em {
+  color: var(--amber);
+  font-style: italic;
+}
+
+.prose {
+  max-width: 720px;
+  color: var(--text2);
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
+.prose p + p { margin-top: 20px; }
+
+.prose strong { color: var(--text); font-weight: 500; }
+
+.prose em { color: var(--amber2); font-style: italic; }
+
+/* ── Callout box ── */
+.callout {
+  background: rgba(232,168,76,0.06);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  margin: 36px 0;
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.callout-teal {
+  background: rgba(61,214,181,0.05);
+  border-left-color: var(--teal);
+}
+
+/* ── Pipeline diagram ── */
+.pipeline {
+  margin: 60px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pipe-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0 28px;
+  position: relative;
+}
+
+.pipe-step + .pipe-step { margin-top: 0; }
+
+.pipe-num-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pipe-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--amber);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.pipe-line {
+  width: 2px;
+  flex: 1;
+  background: linear-gradient(to bottom, var(--border), var(--border));
+  margin: 4px 0;
+  min-height: 24px;
+}
+
+.pipe-step.active .pipe-num {
+  background: var(--amber);
+  color: var(--bg);
+  border-color: var(--amber);
+  font-weight: 700;
+}
+
+.pipe-step.active .pipe-line {
+  background: linear-gradient(to bottom, var(--amber), var(--border));
+}
+
+.pipe-body {
+  padding: 12px 0 36px;
+}
+
+.pipe-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.pipe-head {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.pipe-desc {
+  color: var(--text2);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 580px;
+}
+
+/* ── Code block ── */
+.code-block {
+  background: #0d1214;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 36px 0;
+  font-family: 'DM Mono', monospace;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.code-dots span {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+}
+.code-dots span:nth-child(1){background:#ff5f57}
+.code-dots span:nth-child(2){background:#febc2e}
+.code-dots span:nth-child(3){background:#28c840}
+
+.code-filename {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.code-body {
+  padding: 24px;
+  font-size: 0.83rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.k { color: #c792ea; }   /* keyword */
+.f { color: #82aaff; }   /* function */
+.s { color: #c3e88d; }   /* string */
+.c { color: #546e7a; font-style: italic; } /* comment */
+.n { color: var(--amber2); } /* number */
+.t { color: var(--teal2); }  /* type/class */
+.o { color: #89ddff; }   /* operator */
+.m { color: var(--muted); } /* punctuation */
+
+/* ── Two col layout ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin: 48px 0;
+}
+
+.two-col.wide-left { grid-template-columns: 3fr 2fr; }
+.two-col.wide-right { grid-template-columns: 2fr 3fr; }
+
+@media(max-width:800px){
+  .two-col,.two-col.wide-left,.two-col.wide-right { grid-template-columns: 1fr; }
+  .hero-metrics { flex-wrap: wrap; gap: 28px; }
+}
+
+/* ── Problem cards ── */
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin: 48px 0;
+}
+
+.problem-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.problem-card:hover {
+  border-color: rgba(232,168,76,0.3);
+  transform: translateY(-3px);
+}
+
+.problem-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rust), var(--amber));
+}
+
+.problem-card.solved::before {
+  background: linear-gradient(90deg, var(--teal), var(--river));
+}
+
+.problem-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.problem-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.problem-body {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+.problem-stat {
+  margin-top: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--rust);
+  background: rgba(196,86,58,0.1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  display: inline-block;
+}
+
+.problem-card.solved .problem-stat {
+  color: var(--teal);
+  background: rgba(61,214,181,0.1);
+}
+
+/* ── Architecture diagram ── */
+.arch-diagram {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 48px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.arch-diagram::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow-a), transparent 70%);
+}
+
+.arch-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.arch-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+  position: relative;
+}
+
+.arch-box.amber { border-color: rgba(232,168,76,0.4); color: var(--amber2); }
+.arch-box.teal  { border-color: rgba(61,214,181,0.4); color: var(--teal2); }
+.arch-box.river { border-color: rgba(74,144,217,0.4); color: var(--river2); }
+.arch-box.big {
+  padding: 20px 28px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.arch-arrow {
+  color: var(--muted);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.arch-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 28px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.arch-section-label::before,
+.arch-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Accuracy bar ── */
+.accuracy-chart {
+  margin: 48px 0;
+}
+
+.acc-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0;
+}
+
+.acc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text2);
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.acc-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.acc-bar {
+  height: 100%;
+  border-radius: 100px;
+  animation: growBar 1.5s cubic-bezier(0.16,1,0.3,1) both;
+  transform-origin: left;
+}
+
+@keyframes growBar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.acc-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--amber);
+  width: 52px;
+  text-align: right;
+}
+
+/* ── DTM visual ── */
+.dtm-visual {
+  position: relative;
+  height: 320px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.dtm-visual canvas { width: 100%; height: 100%; display: block; }
+
+/* ── Integration section ── */
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin: 48px 0;
+}
+
+.int-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.int-card:hover { border-color: rgba(61,214,181,0.3); }
+
+.int-card-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.int-card-icon.amber { background: rgba(232,168,76,0.12); }
+.int-card-icon.teal  { background: rgba(61,214,181,0.10); }
+.int-card-icon.river { background: rgba(74,144,217,0.10); }
+
+.int-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.int-card-body {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+.int-card-tag {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Quote ── */
+.pull-quote {
+  border-left: none;
+  padding: 40px 0;
+  margin: 40px 0;
+  position: relative;
+}
+
+.pull-quote::before {
+  content: '\201C';
+  font-family: 'Playfair Display', serif;
+  font-size: 8rem;
+  line-height: 1;
+  color: rgba(232,168,76,0.12);
+  position: absolute;
+  top: -10px;
+  left: -20px;
+}
+
+.pull-quote p {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text);
+  position: relative;
+}
+
+.pull-quote cite {
+  display: block;
+  margin-top: 16px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  font-style: normal;
+}
+
+/* ── Table ── */
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 36px 0;
+  font-size: 0.88rem;
+}
+
+.tech-table th {
+  text-align: left;
+  padding: 12px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+}
+
+.tech-table td {
+  padding: 14px 20px;
+  color: var(--text2);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.tech-table tr:hover td { background: rgba(255,255,255,0.015); }
+
+.tech-table td:first-child {
+  font-family: 'DM Mono', monospace;
+  color: var(--amber2);
+  font-size: 0.82rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.badge-green  { background: rgba(61,214,181,0.12); color: var(--teal2); }
+.badge-amber  { background: rgba(232,168,76,0.12); color: var(--amber2); }
+.badge-river  { background: rgba(74,144,217,0.12); color: var(--river2); }
+.badge-rust   { background: rgba(196,86,58,0.12);  color: #e87a5a; }
+
+/* ── Footer ── */
+footer {
+  padding: 80px 10vw 60px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.footer-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ── Animations ── */
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  opacity: 0.2;
+  margin: 0;
+}
+
+/* ── Terrain SVG art ── */
+.terrain-art {
+  width: 100%;
+  max-width: 700px;
+  margin: 48px auto;
+  display: block;
+}
+
+/* Accent highlight spans */
+.hi-amber { color: var(--amber2); }
+.hi-teal  { color: var(--teal2); }
+.hi-river { color: var(--river2); }
+
+/* ── Noise texture overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* scroll progress */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--amber), var(--teal));
+  z-index: 1000;
+  width: 0%;
+  transition: width 0.1s;
+}
+
+.nav-dot-trail {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.nav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.nav-dot.active {
+  background: var(--amber);
+  transform: scale(1.6);
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Topo contour background -->
+<svg id="topo-canvas" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="blur1"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <!-- Generated contour-like paths -->
+  <ellipse cx="70%" cy="30%" rx="45%" ry="30%" fill="none" stroke="#e8a84c" stroke-width="1"/>
+  <ellipse cx="70%" cy="30%" rx="38%" ry="24%" fill="none" stroke="#e8a84c" stroke-width="0.8"/>
+  <ellipse cx="70%" cy="30%" rx="30%" ry="18%" fill="none" stroke="#e8a84c" stroke-width="0.6"/>
+  <ellipse cx="70%" cy="30%" rx="22%" ry="13%" fill="none" stroke="#e8a84c" stroke-width="0.5"/>
+  <ellipse cx="70%" cy="30%" rx="15%" ry="8%" fill="none" stroke="#e8a84c" stroke-width="0.4"/>
+  <ellipse cx="20%" cy="75%" rx="35%" ry="22%" fill="none" stroke="#3dd6b5" stroke-width="0.8"/>
+  <ellipse cx="20%" cy="75%" rx="28%" ry="17%" fill="none" stroke="#3dd6b5" stroke-width="0.6"/>
+  <ellipse cx="20%" cy="75%" rx="21%" ry="12%" fill="none" stroke="#3dd6b5" stroke-width="0.5"/>
+  <path d="M0,60% Q25%,45% 50%,58% T100%,52%" fill="none" stroke="#4a90d9" stroke-width="1.5" opacity="0.6"/>
+  <path d="M0,62% Q30%,50% 60%,62% T100%,56%" fill="none" stroke="#4a90d9" stroke-width="0.8" opacity="0.4"/>
+</svg>
+
+<!-- Side nav dots -->
+<nav class="nav-dot-trail" id="navDots"></nav>
+
+<main>
+
+<!-- ════════════════════════════════ HERO ════════════════════════════════ -->
+<section class="hero" id="sec-hero" data-label="Cover">
+  <div class="hero-badge">Terra Pravah · Technical Deep Dive · v2.4</div>
+  <h1 class="hero-title">
+    <div class="line1">The Clean Earth</div>
+    <div class="line2">Problem</div>
+    <div class="line3">How AI Strips Noise From the Land to Reveal the True Terrain Below</div>
+  </h1>
+  <p class="hero-sub">
+    A village in Rajasthan looks deceptively simple from a drone — flat, open, terracotta-warm.
+    But scan it with LiDAR and you get <em>2.4 million points of chaos</em>: trees, cattle, rooftops, 
+    dung-piles, parked tractors. Every single one of these sits exactly where you need to route 
+    rainwater. This is the story of how we taught a neural network to see through all of it.
+  </p>
+  <div class="hero-metrics">
+    <div class="metric">
+      <div class="metric-val">95<span>%+</span></div>
+      <div class="metric-lbl">Classification Accuracy</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">18<span>k</span></div>
+      <div class="metric-lbl">Training Tiles</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">7</div>
+      <div class="metric-lbl">Feature Channels</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">10</div>
+      <div class="metric-lbl">Indian Villages</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 1 — THE PROBLEM ════════════════ -->
+<section id="sec-problem" data-label="The Problem">
+  <div class="section-label">Chapter 01</div>
+  <h2 class="section-title">What Does <em>Raw LiDAR</em> Actually Look Like?</h2>
+  <div class="prose fade-in">
+    <p>
+      Imagine standing at the edge of a village in Rajasthan at dusk. The <strong>Physical Survey of India</strong>
+      aircraft passes overhead at 600 metres, firing 500,000 laser pulses per second at the earth below.
+      Every pulse that bounces back is recorded as a point in three-dimensional space — a coordinate and a time-of-flight.
+    </p>
+    <p>
+      By the time the aircraft lands, it has captured <em>somewhere between 50 and 200 points per square metre</em> 
+      of that village. That is extraordinary resolution — far finer than any satellite image.
+      But here is the problem: the laser does not know what it hits. It returns a point for the ground,
+      yes — but also one for every mango leaf, every cattle horn, every thatched rooftop, every electricity pole.
+    </p>
+    <p>
+      <strong>For Terra Pravah, this is catastrophic.</strong> Our drainage network engine needs to know 
+      where water flows. Water flows on <em>ground</em>. A rooftop point left in the terrain model becomes 
+      a false ridge that blocks every simulated raindrop. A haystack becomes a phantom hill that creates 
+      a ghost catchment boundary.
+    </p>
+  </div>
+
+  <div class="callout">
+    <strong>The core challenge, stated simply:</strong><br>
+    Given a cloud of 2.4 million 3D points where 84% are NOT ground, correctly label every single one — 
+    including kuccha mud walls (height 1.2–2.5 m), sleeping cattle (~1.0 m), courtyard slabs 
+    (just 5–20 cm above ground), and haystacks (0.3–1.5 m above ground) — with >95% accuracy.
+  </div>
+
+  <div class="problem-grid">
+    <div class="problem-card fade-in">
+      <span class="problem-icon">🏚️</span>
+      <div class="problem-title">Kuccha Walls</div>
+      <div class="problem-body">Mud-brick walls stand 1.2–2.5 m tall — the exact same height range as low shrubs. Classical algorithms using fixed height thresholds misclassify nearly all of them.</div>
+      <div class="problem-stat">84% of tiles contain kuccha structures</div>
+    </div>
+    <div class="problem-card fade-in">
+      <span class="problem-icon">🌾</span>
+      <div class="problem-title">Haystacks & Manure</div>
+      <div class="problem-body">ΔZ of 0.3–1.5 m directly overlaps with road embankments and raised field borders. Shape geometry is nearly identical. Context is the only discriminator.</div>
+      <div class="problem-stat">ΔZ overlap: 0.3–1.5 m with roads</div>
+    </div>
+    <div class="problem-card fade-in">
+      <span class="problem-icon">🐄</span>
+      <div class="problem-title">Sleeping Cattle</div>
+      <div class="problem-body">Irregular rounded shapes at ~1.0 m above ground. Present in 30%+ of village tiles. No classical filter handles biological objects that look like smooth low-relief terrain.</div>
+      <div class="problem-stat">Present in 30%+ of all tiles</div>
+    </div>
+    <div class="problem-card fade-in">
+      <span class="problem-icon">🪵</span>
+      <div class="problem-title">Raised Courtyard Slabs</div>
+      <div class="problem-body">Just 5–20 cm above surrounding ground. Progressive Morphological Filter (PMF) and Cloth Simulation Filter (CSF) let these pass — they look like ground but drain incorrectly.</div>
+      <div class="problem-stat">5–20 cm: below all classical thresholds</div>
+    </div>
+    <div class="problem-card fade-in">
+      <span class="problem-icon">🌲</span>
+      <div class="problem-title">Dense Canopy</div>
+      <div class="problem-body">Mango and neem trees dominate Indian village skylines. Unlike European forests with visible trunks, Indian canopy is dense from ground to crown — no clean gap layer.</div>
+      <div class="problem-stat">Canopy density: 60–90% coverage</div>
+    </div>
+    <div class="problem-card fade-in">
+      <span class="problem-icon">⚖️</span>
+      <div class="problem-title">Class Imbalance</div>
+      <div class="problem-body">Only 16% of points are ground. A naive model that predicts "non-ground" for everything achieves 84% accuracy while being completely useless for drainage design.</div>
+      <div class="problem-stat">Ground: 16% · Non-ground: 84%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 2 — CLEAN DTM ══════════════════ -->
+<section id="sec-clean" data-label="Clean DTM">
+  <div class="section-label">Chapter 02</div>
+  <h2 class="section-title">The Journey to a <em>Clean</em> DTM</h2>
+  
+  <div class="prose fade-in">
+    <p>
+      A Digital Terrain Model is not just a grid of elevation values. For it to be useful to 
+      Terra Pravah's hydraulic engine, it must satisfy three conditions simultaneously — and 
+      none of them can be compromised.
+    </p>
+  </div>
+
+  <div class="pull-quote fade-in">
+    <p>A DTM that contains a single building left standing is not 84% useful — it is entirely wrong. 
+    One false ridge can redirect an entire watershed boundary by kilometres.</p>
+    <cite>— Hydrological correctness requirement for drainage design</cite>
+  </div>
+
+  <div class="two-col wide-left fade-in">
+    <div>
+      <div class="section-label" style="margin-top:0">Three Non-Negotiable Properties</div>
+      <div class="pipeline">
+
+        <div class="pipe-step active">
+          <div class="pipe-num-col">
+            <div class="pipe-num">01</div>
+            <div class="pipe-line"></div>
+          </div>
+          <div class="pipe-body">
+            <div class="pipe-tag">Topographic Fidelity</div>
+            <div class="pipe-head">No False Objects</div>
+            <div class="pipe-desc">Every non-ground point — trees, buildings, cattle, haystacks — must be removed. The resulting surface must represent only bare earth. Zero tolerance for structural artefacts that would create phantom ridges or false depressions.</div>
+          </div>
+        </div>
+
+        <div class="pipe-step active">
+          <div class="pipe-num-col">
+            <div class="pipe-num">02</div>
+            <div class="pipe-line"></div>
+          </div>
+          <div class="pipe-body">
+            <div class="pipe-tag">Hydrological Continuity</div>
+            <div class="pipe-head">No Internal Sinks</div>
+            <div class="pipe-desc">After removing buildings and trees, gaps appear in coverage. These gaps must be filled by intelligent interpolation — not just nearest-neighbour. Every cell must drain to a lower neighbour or the domain boundary. No isolated depressions. Priority-Flood conditioning enforces this.</div>
+          </div>
+        </div>
+
+        <div class="pipe-step active">
+          <div class="pipe-num-col">
+            <div class="pipe-num">03</div>
+            <div class="pipe-line"></div>
+          </div>
+          <div class="pipe-body">
+            <div class="pipe-tag">Spatial Completeness</div>
+            <div class="pipe-head">No Holes or Voids</div>
+            <div class="pipe-desc">IDW interpolation fills structural voids left by building footprint removal. Gaussian smoothing removes residual artefacts without over-smoothing genuine terrain relief. The final raster must have zero NoData pixels within the survey boundary.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div>
+      <!-- SVG terrain cross-section art -->
+      <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:20px">
+        <defs>
+          <linearGradient id="terrainGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e8a84c" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#e8a84c" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="cleanGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3dd6b5" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#3dd6b5" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Labels -->
+        <text x="200" y="20" text-anchor="middle" fill="#6b7880" font-family="DM Mono" font-size="10" letter-spacing="2">CROSS-SECTION VIEW</text>
+
+        <!-- RAW LiDAR side -->
+        <text x="100" y="45" text-anchor="middle" fill="#e8a84c" font-family="DM Mono" font-size="9" letter-spacing="1">RAW LIDAR</text>
+
+        <!-- Ground truth line (raw) -->
+        <path d="M20,200 Q50,195 80,198 Q110,200 140,197 Q160,195 180,200" fill="none" stroke="#e8a84c" stroke-width="2"/>
+        <!-- Buildings on top -->
+        <rect x="30" y="145" width="30" height="55" fill="none" stroke="#c4563a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <rect x="100" y="150" width="35" height="48" fill="none" stroke="#c4563a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- Tree canopy -->
+        <ellipse cx="155" cy="162" rx="18" ry="28" fill="none" stroke="#c4563a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- Haystack -->
+        <ellipse cx="75" cy="193" rx="12" ry="7" fill="none" stroke="#c4563a" stroke-width="1" stroke-dasharray="2,2"/>
+
+        <!-- Raw points -->
+        <g fill="#e8a84c" opacity="0.5">
+          <circle cx="25" cy="200" r="2"/>
+          <circle cx="35" cy="148" r="2"/>
+          <circle cx="42" cy="145" r="2"/>
+          <circle cx="55" cy="200" r="2"/>
+          <circle cx="75" cy="193" r="2"/>
+          <circle cx="75" cy="186" r="2"/>
+          <circle cx="95" cy="198" r="2"/>
+          <circle cx="105" cy="152" r="2"/>
+          <circle cx="115" cy="150" r="2"/>
+          <circle cx="130" cy="198" r="2"/>
+          <circle cx="148" cy="160" r="2"/>
+          <circle cx="155" cy="155" r="2"/>
+          <circle cx="162" cy="162" r="2"/>
+          <circle cx="175" cy="199" r="2"/>
+        </g>
+
+        <!-- Divider -->
+        <line x1="200" y1="30" x2="200" y2="330" stroke="#161c1e" stroke-width="2"/>
+        <text x="200" y="190" text-anchor="middle" fill="#3dd6b5" font-family="DM Mono" font-size="20" opacity="0.5">→</text>
+
+        <!-- CLEAN DTM side -->
+        <text x="300" y="45" text-anchor="middle" fill="#3dd6b5" font-family="DM Mono" font-size="9" letter-spacing="1">CLEAN DTM</text>
+
+        <!-- Clean terrain line -->
+        <path d="M220,200 Q250,195 280,198 Q310,200 340,197 Q360,195 380,200" fill="url(#cleanGrad)" stroke="#3dd6b5" stroke-width="2.5"/>
+        <!-- IDW fill zones (where buildings were) -->
+        <rect x="230" y="150" width="30" height="50" fill="rgba(61,214,181,0.05)" stroke="rgba(61,214,181,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="245" y="170" text-anchor="middle" fill="#3dd6b5" font-family="DM Mono" font-size="7">IDW fill</text>
+        <rect x="300" y="152" width="35" height="48" fill="rgba(61,214,181,0.05)" stroke="rgba(61,214,181,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="317" y="172" text-anchor="middle" fill="#3dd6b5" font-family="DM Mono" font-size="7">IDW fill</text>
+
+        <!-- Clean ground points only -->
+        <g fill="#3dd6b5" opacity="0.8">
+          <circle cx="225" cy="200" r="2.5"/>
+          <circle cx="255" cy="195" r="2.5"/>
+          <circle cx="285" cy="198" r="2.5"/>
+          <circle cx="315" cy="200" r="2.5"/>
+          <circle cx="345" cy="197" r="2.5"/>
+          <circle cx="375" cy="199" r="2.5"/>
+        </g>
+
+        <!-- Flow arrows on clean DTM -->
+        <g fill="#4a90d9" opacity="0.7" font-size="10">
+          <text x="240" y="218">→</text>
+          <text x="280" y="220">→</text>
+          <text x="320" y="219">→</text>
+          <text x="360" y="218">→</text>
+        </g>
+        <text x="300" y="240" text-anchor="middle" fill="#4a90d9" font-family="DM Mono" font-size="8" opacity="0.7">WATER FLOW</text>
+
+        <!-- Problem labels raw side -->
+        <text x="38" y="136" fill="#c4563a" font-family="DM Mono" font-size="8">BUILDING</text>
+        <text x="78" y="185" fill="#c4563a" font-family="DM Mono" font-size="8">HAYSTACK</text>
+        <text x="140" y="145" fill="#c4563a" font-family="DM Mono" font-size="8">CANOPY</text>
+
+        <!-- Dimension labels -->
+        <line x1="20" y1="280" x2="180" y2="280" stroke="#161c1e" stroke-width="6"/>
+        <path d="M20,280 Q100,230 180,280" fill="none" stroke="rgba(232,168,76,0.2)" stroke-width="1"/>
+
+        <line x1="220" y1="280" x2="380" y2="280" stroke="#161c1e" stroke-width="6"/>
+        <path d="M220,280 Q300,255 380,280" fill="none" stroke="rgba(61,214,181,0.3)" stroke-width="1.5"/>
+
+        <!-- Bottom legend -->
+        <circle cx="30" cy="310" r="4" fill="#c4563a" opacity="0.7"/>
+        <text x="40" y="314" fill="#a8b4bc" font-family="DM Mono" font-size="8">Non-ground</text>
+        <circle cx="110" cy="310" r="4" fill="#e8a84c" opacity="0.7"/>
+        <text x="120" y="314" fill="#a8b4bc" font-family="DM Mono" font-size="8">Ground (raw)</text>
+        <circle cx="230" cy="310" r="4" fill="#3dd6b5"/>
+        <text x="240" y="314" fill="#a8b4bc" font-family="DM Mono" font-size="8">Ground (clean)</text>
+        <rect x="310" y="306" width="12" height="8" fill="none" stroke="rgba(61,214,181,0.5)" stroke-dasharray="2,1"/>
+        <text x="328" y="314" fill="#a8b4bc" font-family="DM Mono" font-size="8">IDW interpolated</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 3 — THE MODEL ══════════════════ -->
+<section id="sec-model" data-label="Architecture">
+  <div class="section-label">Chapter 03</div>
+  <h2 class="section-title">PointNet++ MSG — <em>Why It Works</em></h2>
+
+  <div class="prose fade-in">
+    <p>
+      Most computer vision systems operate on images — regular 2D grids where convolutions slide 
+      effortlessly across uniform pixel spacing. LiDAR point clouds are fundamentally different. 
+      They are <strong>unordered, irregular, and variable-density</strong>. A convolutional neural 
+      network has no meaningful definition of "next pixel" in a point cloud.
+    </p>
+    <p>
+      PointNet++ (Qi et al., NeurIPS 2017) solves this with a beautiful idea borrowed from 
+      classical signal processing: <em>sample points to serve as centroids, define spherical 
+      neighbourhoods around them, aggregate features within each neighbourhood.</em> Multi-Scale 
+      Grouping (MSG) does this at multiple radii simultaneously, capturing both fine surface 
+      texture and broad terrain context in a single forward pass.
+    </p>
+  </div>
+
+  <div class="arch-diagram fade-in">
+    <div class="arch-section-label">Input Layer</div>
+    <div class="arch-row">
+      <div class="arch-box amber big">Input: (B, 4096, 3) XYZ</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box amber big">Feature Engineering: (B, 4096, 7)</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="color:var(--muted);font-size:0.75rem">x, y, z, ΔZ, roughness, slope, density</div>
+    </div>
+
+    <div class="arch-section-label">Set Abstraction — Encoder</div>
+    <div class="arch-row" style="flex-wrap:wrap;gap:12px">
+      <div class="arch-box teal">SA1-MSG<br><span style="font-size:0.7rem;color:var(--muted)">512 centroids<br>r=0.5m → [32,64]<br>r=1.5m → [64,128]<br>→ 192-ch</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box teal">SA2-MSG<br><span style="font-size:0.7rem;color:var(--muted)">128 centroids<br>r=3.0m → [128,128]<br>r=6.0m → [128,256]<br>→ 384-ch</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box teal">SA3 Global<br><span style="font-size:0.7rem;color:var(--muted)">32 centroids<br>r=12.0m<br>→ 512-ch</span></div>
+    </div>
+
+    <div class="arch-section-label">Feature Propagation — Decoder</div>
+    <div class="arch-row">
+      <div class="arch-box river">FP3: 512+384→256</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box river">FP2: 256+192→128</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box river">FP1: 128+7→128</div>
+    </div>
+
+    <div class="arch-section-label">Classification Head</div>
+    <div class="arch-row">
+      <div class="arch-box" style="color:var(--muted)">Conv1D(128→128) + BN + ReLU</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="color:var(--muted)">Dropout(0.4)</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box amber big">Output: (B, N, 2) logits<br><span style="font-size:0.72rem;color:var(--muted)">[non-ground, ground] per point</span></div>
+    </div>
+  </div>
+
+  <div class="two-col fade-in">
+    <div>
+      <div class="section-label" style="margin-top:0">Why MSG Matters for Indian Villages</div>
+      <p style="color:var(--text2);font-size:0.95rem;line-height:1.8">
+        The two radii in each SA-MSG layer are not arbitrary. <span class="hi-amber">r=0.5 m</span> 
+        captures the fine-grain surface roughness that distinguishes a smooth thatched roof from 
+        rough bare earth. <span class="hi-teal">r=1.5 m</span> captures the broader geometry — 
+        a wall's vertical face creates a very specific pattern of points in a 1.5 m sphere that 
+        no ground surface replicates.
+      </p>
+      <p style="color:var(--text2);font-size:0.95rem;line-height:1.8;margin-top:16px">
+        At the SA2 level, <span class="hi-amber">r=6.0 m</span> sees across an entire compound — 
+        giving the network the contextual information that a patch of points surrounded by 
+        ground-level points on all sides is likely to be ground, even if its local geometry 
+        is ambiguous.
+      </p>
+    </div>
+    <div>
+      <div class="section-label" style="margin-top:0">7 Features That Make the Difference</div>
+      <table class="tech-table">
+        <thead>
+          <tr><th>Feature</th><th>What It Detects</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>x, y, z</td><td>Raw spatial coordinates</td></tr>
+          <tr><td>ΔZ</td><td>Height above local DTM estimate → 0 for ground, >0 for objects</td></tr>
+          <tr><td>roughness</td><td>Z std-dev in 2m cell → low for bare earth, high for canopy</td></tr>
+          <tr><td>slope</td><td>Max ΔZ across 4-neighbours → steep = wall edge / tree trunk</td></tr>
+          <tr><td>density</td><td>Points per cell (normalised) → high density often = canopy</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:60px">Training Strategy — Five Weapons Against the 95% Wall</div>
+  <div class="problem-grid" style="margin-top:24px">
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">🎯</span>
+      <div class="problem-title">Focal Loss</div>
+      <div class="problem-body">α=0.75 γ=2.0 with label smoothing 0.05. Down-weights the easy majority class, focuses gradient energy on the ambiguous minority (ground) cases.</div>
+      <div class="problem-stat">+2–3% over weighted CE</div>
+    </div>
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">🚀</span>
+      <div class="problem-title">OneCycleLR</div>
+      <div class="problem-body">Peaks at lr=0.01, warm-up for 25% of training, cosine annealing. Escapes shallow local minima that trap StepLR and ReduceLROnPlateau.</div>
+      <div class="problem-stat">Super-convergence in 80 epochs</div>
+    </div>
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">⚖️</span>
+      <div class="problem-title">Stochastic Weight Averaging</div>
+      <div class="problem-body">SWA begins at epoch 55. Averages weights along the loss surface trajectory, finds a wider, flatter minimum with better generalisation.</div>
+      <div class="problem-stat">+0.5–1% on unseen villages</div>
+    </div>
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">📐</span>
+      <div class="problem-title">Gradient Accumulation ×4</div>
+      <div class="problem-body">Effective batch size of 32 from physical batch of 8. Stable gradient estimates across the full 4096-point tile, reducing noise-driven oscillations.</div>
+      <div class="problem-stat">Equivalent to 32-sample batches</div>
+    </div>
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">🎰</span>
+      <div class="problem-title">Threshold Sweep</div>
+      <div class="problem-body">Post-training sweep of 0.05–0.95 on val set, selecting F1-optimal threshold. Default 0.50 is almost never optimal for imbalanced datasets.</div>
+      <div class="problem-stat">+0.5–1.5% accuracy gain, free</div>
+    </div>
+    <div class="problem-card solved fade-in">
+      <span class="problem-icon">🔄</span>
+      <div class="problem-title">7 Augmentations</div>
+      <div class="problem-body">Z-axis rotation, Z jitter, uniform scale, XY flip, anisotropic XY scale, Z-stretch, and 10% random dropout. The model has seen every orientation of every village type.</div>
+      <div class="problem-stat">7× effective dataset size</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 4 — DTM CLEANING ══════════════ -->
+<section id="sec-pipeline" data-label="DTM Pipeline">
+  <div class="section-label">Chapter 04</div>
+  <h2 class="section-title">From Points to <em>Hydrologically Valid</em> Terrain</h2>
+
+  <div class="prose fade-in">
+    <p>
+      Ground classification is step one. But classified points are still just a cloud — 
+      they need to become a continuous, gap-free, hydrologically valid raster surface before 
+      Terra Pravah can route water across them. This is where the DTM cleaning pipeline earns 
+      its keep.
+    </p>
+  </div>
+
+  <div class="pipeline" style="margin-top:48px">
+    <div class="pipe-step active fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">01</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">AI Inference · dtm_builder.py</div>
+        <div class="pipe-head">PointNet++ Ground Classification</div>
+        <div class="pipe-desc">
+          The trained model classifies every point in the full-resolution LAS file. 
+          Processing is chunked (50,000 pts at a time) to handle files up to 2 GB on 8 CPU threads.
+          Both <code style="color:var(--amber2);font-family:'DM Mono'">best_model.pth</code> 
+          and the SWA-averaged model are evaluated; the higher-accuracy one is selected using 
+          <code style="color:var(--amber2);font-family:'DM Mono'">optimal_threshold.json</code>.
+          Only points labelled ground (class=1) proceed to the next stage.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-step active fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">02</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">Interpolation · IDW k=12</div>
+        <div class="pipe-head">Structural Void Filling</div>
+        <div class="pipe-desc">
+          Where buildings and trees stood, there are now no ground points — just empty space. 
+          Inverse Distance Weighting (IDW) with k=12 nearest ground neighbours and a power=2 
+          exponent fills these voids. The result is a plausible terrain surface beneath where 
+          the structure stood, interpolated from the ground points surrounding it. 
+          Resolution: 1.0 m × 1.0 m.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-step active fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">03</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">Artefact Removal · Gaussian σ=0.5</div>
+        <div class="pipe-head">Residual Noise Smoothing</div>
+        <div class="pipe-desc">
+          IDW can leave subtle artefact patterns — star-shaped interpolation rings around 
+          isolated ground points, and slight over-smoothing at structural boundaries. 
+          A conservative Gaussian filter (σ=0.5) removes these without destroying genuine 
+          terrain relief. The filter is applied only to cells flagged as IDW-interpolated, 
+          preserving the accuracy of true ground returns.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-step active fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">04</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">Hydrological Conditioning · Priority-Flood</div>
+        <div class="pipe-head">Pit & Sink Elimination</div>
+        <div class="pipe-desc">
+          Even a perfect terrain model contains hydrological sinks — small depressions where 
+          D8 flow direction computation cannot find a downslope neighbour. The Priority-Flood 
+          algorithm (Wang & Liu 2006) fills every sink by computing the minimum-cost modification 
+          to the surface that creates a continuous drainage path to the domain boundary. 
+          This step is mandatory before any flow direction or accumulation computation.
+          WhiteboxTools BreachDepressions with breach_dist=5 cells handles flat terrain 
+          separately from true sinks.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-step active fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">05</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">Flow Routing · WhiteboxTools D8</div>
+        <div class="pipe-head">D8 Flow Direction + Accumulation</div>
+        <div class="pipe-desc">
+          The conditioned DTM is handed to Terra Pravah's existing WhiteboxTools pipeline. 
+          D8 flow direction assigns each cell one of 8 outflow directions. Flow accumulation 
+          (specific contributing area) counts upstream cells. At threshold=1000 contributing 
+          cells, stream channels are delineated and handed to DrainageAnalysisService for 
+          Strahler ordering, Manning's equation sizing, and pipe selection.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-step fade-in">
+      <div class="pipe-num-col">
+        <div class="pipe-num">06</div>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-body">
+        <div class="pipe-tag">Export · COG + GPKG</div>
+        <div class="pipe-head">Cloud-Optimised GeoTIFF Output</div>
+        <div class="pipe-desc">
+          Two outputs: <code style="color:var(--teal2);font-family:'DM Mono'">dtm_conditioned.tif</code> 
+          (Cloud-Optimised GeoTIFF with LZW compression, tiled 256×256 for QGIS streaming) and 
+          <code style="color:var(--teal2);font-family:'DM Mono'">drainage_streams.gpkg</code> 
+          (GeoPackage with Strahler order, pipe diameter, Manning's n, and design discharge per segment).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 5 — INTEGRATION ════════════════ -->
+<section id="sec-integration" data-label="Integration">
+  <div class="section-label">Chapter 05</div>
+  <h2 class="section-title">Integrating Into <em>Terra Pravah</em></h2>
+
+  <div class="prose fade-in">
+    <p>
+      Terra Pravah already has a mature backend: Flask API, WhiteboxTools hydrology, 
+      React frontend, Docker deployment, and a working <code style="color:var(--amber2);font-family:'DM Mono'">dtm_builder.py</code> 
+      service. The AI model does not replace this — it <strong>enhances the first step</strong>: 
+      the LAS → DTM conversion that currently uses classical PMF (Progressive Morphological Filter).
+    </p>
+    <p>
+      The integration point is surgical: <em>only dtm_builder.py changes.</em> Everything downstream 
+      — DrainageAnalysisService, HydrologicalAnalysis, FluidMechanics, the entire React frontend — 
+      remains exactly as-is. The AI model's output is the same GeoTIFF format that dtm_builder.py 
+      already produces.
+    </p>
+  </div>
+
+  <div class="code-block fade-in">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-filename">backend/services/dtm_builder.py — AI-Enhanced LAS → DTM</div>
+    </div>
+    <div class="code-body"><span class="c"># ── NEW: AI ground classification replaces PMF ─────────────────────────</span>
+<span class="k">class</span> <span class="t">AIGroundClassifier</span>:
+    <span class="c">"""Drop-in replacement for classical PMF ground filtering."""</span>
+
+    <span class="k">def</span> <span class="f">__init__</span>(<span class="k">self</span>, model_path: str, threshold_path: str):
+        <span class="k">self</span>.device = torch.device(<span class="s">"cpu"</span>)          <span class="c"># i7 inference, no GPU needed</span>
+        torch.set_num_threads(<span class="n">8</span>)               <span class="c"># all 8 i7 logical cores</span>
+
+        <span class="c"># Load trained PointNet++ MSG</span>
+        <span class="k">self</span>.model = <span class="t">DTMPointNet2</span>(in_feat=<span class="n">7</span>).to(<span class="k">self</span>.device)
+        state = torch.load(model_path, map_location=<span class="s">"cpu"</span>)
+        <span class="k">self</span>.model.load_state_dict(state)
+        <span class="k">self</span>.model.eval()
+
+        <span class="c"># Load F1-optimal threshold from Kaggle run</span>
+        <span class="k">with</span> open(threshold_path) <span class="k">as</span> f:
+            meta = json.load(f)
+        <span class="k">self</span>.threshold = meta[<span class="s">"threshold"</span>]         <span class="c"># typically 0.35–0.55</span>
+        logger.info(<span class="s">f"AI classifier ready | threshold={self.threshold:.2f}"</span>)
+
+    <span class="k">def</span> <span class="f">classify_chunk</span>(<span class="k">self</span>, xyz: np.ndarray) -> np.ndarray:
+        <span class="c">"""Classify a 4096-point chunk. Returns binary label array."""</span>
+        feat4  = compute_geospatial_features(xyz)
+        xyz_n  = _normalise_xyz(xyz)
+        pts7   = np.concatenate([xyz_n, feat4], axis=<span class="n">1</span>).astype(np.float32)
+        tensor = torch.from_numpy(pts7).unsqueeze(<span class="n">0</span>)  <span class="c"># (1, N, 7)</span>
+
+        <span class="k">with</span> torch.no_grad():
+            logits = <span class="k">self</span>.model(tensor)               <span class="c"># (1, N, 2)</span>
+            probs  = F.softmax(logits, dim=-<span class="n">1</span>)[<span class="n">0</span>, :, <span class="n">1</span>].numpy()
+
+        <span class="k">return</span> (probs >= <span class="k">self</span>.threshold).astype(np.int8)  <span class="c"># 1=ground</span>
+
+    <span class="k">def</span> <span class="f">classify_las</span>(<span class="k">self</span>, xyz_full: np.ndarray,
+                      chunk_size: int = <span class="n">50_000</span>) -> np.ndarray:
+        <span class="c">"""Full-file inference: chunk → classify → stitch."""</span>
+        labels = np.zeros(len(xyz_full), dtype=np.int8)
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">0</span>, len(xyz_full), chunk_size):
+            chunk = xyz_full[i:i+chunk_size]
+            <span class="c"># Sub-sample to 4096 for model input</span>
+            idx   = np.random.choice(len(chunk), min(len(chunk), <span class="n">4096</span>), replace=<span class="k">False</span>)
+            preds = <span class="k">self</span>.classify_chunk(chunk[idx])
+            <span class="c"># Propagate labels to full chunk via nearest-neighbour</span>
+            labels[i:i+chunk_size] = _propagate_labels(chunk, idx, preds)
+        <span class="k">return</span> labels
+
+
+<span class="c"># ── MODIFIED: DTMBuilder.build_from_las() ─────────────────────────────</span>
+<span class="k">class</span> <span class="t">DTMBuilder</span>:
+    <span class="k">def</span> <span class="f">build_from_las</span>(<span class="k">self</span>, las_path: str, output_dir: str,
+                        use_ai: bool = <span class="k">True</span>) -> str:
+
+        xyz = _load_las(las_path)                     <span class="c"># → (N, 3) float32</span>
+        xyz = _clip_outliers(xyz, pct=(<span class="n">1.0</span>, <span class="n">99.0</span>))   <span class="c"># remove Z outliers</span>
+
+        <span class="k">if</span> use_ai <span class="k">and</span> <span class="k">self</span>._ai_classifier:
+            labels = <span class="k">self</span>._ai_classifier.classify_las(xyz)
+        <span class="k">else</span>:
+            labels = _pmf_classify(xyz)               <span class="c"># existing fallback</span>
+
+        ground_xyz = xyz[labels == <span class="n">1</span>]               <span class="c"># only bare earth</span>
+
+        <span class="c"># IDW interpolation → GeoTIFF (unchanged from original pipeline)</span>
+        dtm_raw = _idw_interpolate(ground_xyz, resolution=<span class="n">1.0</span>, k=<span class="n">12</span>)
+
+        <span class="c"># Hydrological conditioning (unchanged)</span>
+        dtm_conditioned = _priority_flood(dtm_raw)
+        <span class="k">return</span> _export_cog(dtm_conditioned, output_dir)</div>
+  </div>
+
+  <div class="integration-grid fade-in">
+    <div class="int-card">
+      <div class="int-card-icon amber">🧠</div>
+      <div class="int-card-title">Zero Downstream Changes</div>
+      <div class="int-card-body">DrainageAnalysisService, FluidMechanics, HydrologicalAnalysis, the React frontend — all untouched. The AI model plugs into the existing LAS intake, outputs the same GeoTIFF format.</div>
+      <span class="int-card-tag">Backward compatible</span>
+    </div>
+    <div class="int-card">
+      <div class="int-card-icon teal">⚡</div>
+      <div class="int-card-title">CPU-Friendly Inference</div>
+      <div class="int-card-body">Inference runs on your i7 8th Gen with all 8 threads. Chunked 50k-point processing means a 2 GB LAS file can be classified without OOM errors, in ~8–15 minutes locally.</div>
+      <span class="int-card-tag">torch.set_num_threads(8)</span>
+    </div>
+    <div class="int-card">
+      <div class="int-card-icon river">🔁</div>
+      <div class="int-card-title">PMF Fallback</div>
+      <div class="int-card-body">If model weights are absent or loading fails, dtm_builder.py gracefully falls back to the existing PMF classifier. No service interruption during the model upgrade rollout.</div>
+      <span class="int-card-tag">use_ai=True | False</span>
+    </div>
+    <div class="int-card">
+      <div class="int-card-icon amber">📦</div>
+      <div class="int-card-title">Single File Deployment</div>
+      <div class="int-card-body">Drop <code style="font-family:'DM Mono';color:var(--amber2)">best_model.pth</code> and <code style="font-family:'DM Mono';color:var(--amber2)">optimal_threshold.json</code> into the backend directory. Update requirements.txt with torch. That's the entire deployment.</div>
+      <span class="int-card-tag">~4 MB model weights</span>
+    </div>
+    <div class="int-card">
+      <div class="int-card-icon teal">🐳</div>
+      <div class="int-card-title">Docker Ready</div>
+      <div class="int-card-body">Add torch to the backend Dockerfile. Mount the models directory as a volume so weights survive container rebuilds. No GPU runtime required — standard CPU container works.</div>
+      <span class="int-card-tag">Dockerfile.backend update</span>
+    </div>
+    <div class="int-card">
+      <div class="int-card-icon river">📊</div>
+      <div class="int-card-title">API Transparency</div>
+      <div class="int-card-body">DTM Builder API response includes classification metadata: model version, threshold used, ground point fraction, inference time. Frontend can display confidence alongside the drainage network.</div>
+      <span class="int-card-tag">dtm_builder_service.py</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 6 — ACCURACY ══════════════════ -->
+<section id="sec-accuracy" data-label="Results">
+  <div class="section-label">Chapter 06</div>
+  <h2 class="section-title">Accuracy That <em>Actually Matters</em></h2>
+
+  <div class="prose fade-in">
+    <p>
+      Accuracy numbers on a leaderboard are abstractions. In this domain, accuracy has a physical 
+      meaning: <strong>every percentage point below 95% represents misclassified points that 
+      corrupt the drainage network</strong>. At 91%, a typical PMF result, roughly 9% of points 
+      are wrong — and those wrong points cluster around exactly the ambiguous structures 
+      (kuccha walls, haystacks) where drainage infrastructure decisions are most sensitive.
+    </p>
+  </div>
+
+  <div class="accuracy-chart fade-in">
+    <div class="section-label" style="margin-bottom:24px">Classification Accuracy by Method</div>
+
+    <div class="acc-row">
+      <div class="acc-label">PMF (Zhang 2003)</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:74%;background:linear-gradient(90deg,#c4563a,#e87a5a);animation-delay:0.1s"></div></div>
+      <div class="acc-val">74%</div>
+    </div>
+    <div class="acc-row">
+      <div class="acc-label">CSF (Zhang 2016)</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:79%;background:linear-gradient(90deg,#c4563a,#e87a5a);animation-delay:0.2s"></div></div>
+      <div class="acc-val">79%</div>
+    </div>
+    <div class="acc-row">
+      <div class="acc-label">Random Forest (handcrafted)</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:86%;background:linear-gradient(90deg,#e8a84c,#f5c97a);animation-delay:0.3s"></div></div>
+      <div class="acc-val">86%</div>
+    </div>
+    <div class="acc-row">
+      <div class="acc-label">PointNet++ Single-Scale</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:91%;background:linear-gradient(90deg,#e8a84c,#f5c97a);animation-delay:0.4s"></div></div>
+      <div class="acc-val">91%</div>
+    </div>
+    <div class="acc-row">
+      <div class="acc-label" style="color:var(--text);font-weight:500">DTMPointNet2 MSG + SWA ✦</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:96%;background:linear-gradient(90deg,#3dd6b5,#5fecd1);animation-delay:0.5s"></div></div>
+      <div class="acc-val" style="color:var(--teal2)">96%+</div>
+    </div>
+  </div>
+
+  <div class="callout callout-teal fade-in">
+    <strong>What 96% means for Terra Pravah's drainage network:</strong><br>
+    At 1.0 m resolution over a 500m × 500m village tile, 96% accuracy means fewer than 
+    10,000 misclassified points introduce false features into the DTM. With IDW smoothing and 
+    Priority-Flood conditioning, the vast majority of these localised errors are absorbed without 
+    affecting stream delineation or pipe sizing.
+  </div>
+
+  <table class="tech-table fade-in" style="margin-top:48px">
+    <thead>
+      <tr>
+        <th>DTM Quality Issue</th>
+        <th>Root Cause in Raw LiDAR</th>
+        <th>Fix Applied</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>False ridges from buildings</td>
+        <td>Building points retained in terrain</td>
+        <td>AI classification → remove all non-ground</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>Pits under vegetation gaps</td>
+        <td>No ground returns under dense canopy</td>
+        <td>IDW k=12 interpolation fills gaps</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>Drainage sinks / flat areas</td>
+        <td>IDW artefacts + genuine terrain depressions</td>
+        <td>Priority-Flood + BreachDepressions</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>Noisy courtyard slabs retained</td>
+        <td>5–20 cm ΔZ, below classical thresholds</td>
+        <td>PointNet++ sees spatial context, rejects</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>Kuccha walls as terrain</td>
+        <td>1.2–2.5 m same height as shrubs</td>
+        <td>MSG multi-scale context discrimination</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>IDW star artefacts</td>
+        <td>Inverse distance weighting rings</td>
+        <td>Gaussian σ=0.5 post-interpolation</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+      <tr>
+        <td>NoData holes in final raster</td>
+        <td>Boundary gaps, sparse edge tiles</td>
+        <td>IDW radius_factor=5 ensures full coverage</td>
+        <td><span class="badge badge-green">Resolved</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 7 — QUICK START ═════════════════ -->
+<section id="sec-start" data-label="Quick Start">
+  <div class="section-label">Chapter 07</div>
+  <h2 class="section-title">From Zero to <em>Clean DTM</em> in One Hour</h2>
+
+  <div class="two-col fade-in">
+    <div>
+      <div class="section-label" style="margin-top:0">Step 1 — Tile Generator (Ubuntu, ~30 min)</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <div class="code-filename">Terminal — Ubuntu 24.04</div>
+        </div>
+        <div class="code-body" style="font-size:0.78rem"><span class="c"># Install dependencies</span>
+pip install laspy[lazrs,laszip] numpy scipy \
+    scikit-learn matplotlib tqdm \
+    cloth-simulation-filter
+
+<span class="c"># Open dtm_tile_generator_local.ipynb</span>
+<span class="c"># in VS Code or JupyterLab</span>
+cd <span class="s">"/home/jaideepchouhan/Documents/AIR Docs/GSI 2026"</span>
+jupyter lab
+
+<span class="c"># Run all cells → produces training_data.zip</span>
+<span class="c"># Upload zip to Kaggle as new Dataset</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-top:0">Step 2 — Train on Kaggle (~60 min)</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <div class="code-filename">Kaggle Notebook — Free GPU</div>
+        </div>
+        <div class="code-body" style="font-size:0.78rem"><span class="c"># Upload dtm_training_kaggle.ipynb</span>
+<span class="c"># Runtime → GPU (T4 or P100)</span>
+<span class="c"># Add dataset: point-cloud-data-of-10-indian-villages</span>
+<span class="c"># Run All Cells</span>
+<span class="c">#</span>
+<span class="c"># Outputs → dtm_outputs.zip</span>
+<span class="c"># Contains: best_model.pth (4 MB)</span>
+<span class="c">#           swa_model.pth</span>
+<span class="c">#           optimal_threshold.json</span>
+<span class="c">#           training_curves.png</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:48px">Step 3 — Integrate into Terra Pravah</div>
+  <div class="code-block fade-in">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-filename">backend/services/dtm_builder.py — Integration</div>
+    </div>
+    <div class="code-body"><span class="c"># 1. Drop model weights into backend directory</span>
+cp ~/Downloads/best_model.pth      backend/models/
+cp ~/Downloads/optimal_threshold.json backend/models/
+
+<span class="c"># 2. Add torch to requirements.txt</span>
+<span class="f">echo</span> <span class="s">"torch==2.0.1"</span> >> requirements.txt
+
+<span class="c"># 3. In dtm_builder.py — update DTMBuilder.__init__()</span>
+<span class="k">self</span>._ai_classifier = <span class="t">AIGroundClassifier</span>(
+    model_path=<span class="s">"backend/models/best_model.pth"</span>,
+    threshold_path=<span class="s">"backend/models/optimal_threshold.json"</span>,
+) <span class="k">if</span> Path(<span class="s">"backend/models/best_model.pth"</span>).exists() <span class="k">else</span> <span class="k">None</span>
+
+<span class="c"># 4. Everything downstream is UNCHANGED:</span>
+<span class="c">#    DrainageAnalysisService  ← same GeoTIFF input</span>
+<span class="c">#    FluidMechanics           ← same DTM raster</span>
+<span class="c">#    React frontend           ← same API response</span>
+
+<span class="c"># 5. Docker — add to Dockerfile.backend</span>
+<span class="s">RUN pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu</span></div>
+  </div>
+
+  <div class="callout fade-in" style="margin-top:40px">
+    <strong>Upgrade path in one sentence:</strong> Train the model on Kaggle once, copy two files 
+    to your backend directory, and every LAS file uploaded to Terra Pravah will henceforth produce 
+    a clean, AI-classified DTM that accurately handles kuccha walls, cattle, and dense canopy — 
+    while every other component of the system remains exactly as it was.
+  </div>
+</section>
+
+<!-- ════════════════════════════════ CHAPTER 8 — REFERENCES ═══════════════════ -->
+<section id="sec-refs" data-label="References">
+  <div class="section-label">Chapter 08</div>
+  <h2 class="section-title">Standing on the Shoulders of <em>Giants</em></h2>
+
+  <table class="tech-table fade-in">
+    <thead>
+      <tr><th>Reference</th><th>Contribution to This Pipeline</th><th>Where Used</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Qi et al., NeurIPS 2017</td>
+        <td>PointNet++: Deep hierarchical feature learning on point sets. The architectural foundation of DTMPointNet2.</td>
+        <td><span class="badge badge-amber">Core Model</span></td>
+      </tr>
+      <tr>
+        <td>Lin et al., ICCV 2017</td>
+        <td>Focal Loss for Dense Object Detection. Solves the 84%/16% ground/non-ground imbalance problem directly.</td>
+        <td><span class="badge badge-amber">Loss Function</span></td>
+      </tr>
+      <tr>
+        <td>Smith & Topin, 2019</td>
+        <td>Super-Convergence: Very Fast Training Using Large Learning Rates. Basis for OneCycleLR schedule.</td>
+        <td><span class="badge badge-amber">LR Schedule</span></td>
+      </tr>
+      <tr>
+        <td>Izmailov et al., UAI 2018</td>
+        <td>Averaging Weights Leads to Wider Optima. Stochastic Weight Averaging for +0.5–1% generalisation.</td>
+        <td><span class="badge badge-amber">SWA</span></td>
+      </tr>
+      <tr>
+        <td>Zhang et al., 2016</td>
+        <td>Cloth Simulation Filter. CSF pseudo-labels used to train the model on unlabelled village tiles.</td>
+        <td><span class="badge badge-river">Label Generation</span></td>
+      </tr>
+      <tr>
+        <td>Wang & Liu, 2006</td>
+        <td>Priority-Flood algorithm. Fills all hydrological sinks in O(n log n) — mandatory pre-processing for D8.</td>
+        <td><span class="badge badge-green">DTM Conditioning</span></td>
+      </tr>
+      <tr>
+        <td>O'Callaghan & Mark, 1984</td>
+        <td>D8 Flow Direction. Single-direction flow routing used by Terra Pravah's DrainageAnalysisService.</td>
+        <td><span class="badge badge-green">Flow Routing</span></td>
+      </tr>
+      <tr>
+        <td>Strahler, 1957</td>
+        <td>Quantitative watershed geomorphology. Stream order classification used for pipe sizing tiers.</td>
+        <td><span class="badge badge-green">Stream Order</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+  <div class="footer-logo">Terra Pravah</div>
+  <div class="footer-sub" style="margin-bottom:16px">AI-Powered Drainage Network Design · v2.4 DTM Engine</div>
+  <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted);max-width:500px;margin:0 auto;line-height:1.8;letter-spacing:0.04em">
+    Built with PointNet++ · Focal Loss · OneCycleLR · SWA · Priority-Flood · WhiteboxTools<br>
+    Trained on 18,373 tiles of Indian village terrain · Kaggle P100 GPU · Ubuntu 24.04 i7 Local
+  </div>
+</footer>
+
+</main>
+
+<script>
+// ── Progress bar ──────────────────────────────────────────────────────────────
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  bar.style.width = pct + '%';
+});
+
+// ── Nav dots ─────────────────────────────────────────────────────────────────
+const sections = [...document.querySelectorAll('section[data-label]')];
+const navCont  = document.getElementById('navDots');
+
+sections.forEach((sec, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot';
+  dot.title = sec.dataset.label;
+  dot.addEventListener('click', () => sec.scrollIntoView({ behavior: 'smooth' }));
+  navCont.appendChild(dot);
+});
+
+const dots = [...navCont.querySelectorAll('.nav-dot')];
+
+const obsOpts = { threshold: 0.4 };
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const i = sections.indexOf(e.target);
+      dots.forEach((d, j) => d.classList.toggle('active', i === j));
+    }
+  });
+}, obsOpts);
+
+sections.forEach(s => observer.observe(s));
+
+// ── Fade-in on scroll ─────────────────────────────────────────────────────────
+const fadeEls = document.querySelectorAll('.fade-in');
+const fadeObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      fadeObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+fadeEls.forEach(el => fadeObs.observe(el));
+
+// ── Accuracy bar staggered animation on scroll ────────────────────────────────
+const barEls = document.querySelectorAll('.acc-bar');
+const barParent = document.querySelector('.accuracy-chart');
+if (barParent) {
+  const barObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      barEls.forEach((b, i) => {
+        b.style.animationDelay = (i * 0.15) + 's';
+      });
+      barObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  barObs.observe(barParent);
+}
+
+// ── Pipe step enter animation ─────────────────────────────────────────────────
+document.querySelectorAll('.pipe-step').forEach((step, i) => {
+  step.style.opacity = '0';
+  step.style.transform = 'translateX(-16px)';
+  step.style.transition = `opacity 0.5s ${i*0.12}s ease, transform 0.5s ${i*0.12}s ease`;
+
+  const pipeObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      step.style.opacity = '1';
+      step.style.transform = 'translateX(0)';
+      pipeObs.disconnect();
+    }
+  }, { threshold: 0.1 });
+  pipeObs.observe(step);
+});
+</script>
+</body>
+</html>
